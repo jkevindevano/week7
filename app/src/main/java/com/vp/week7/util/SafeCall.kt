@@ -1,5 +1,6 @@
 package com.vp.week7.util
 
+import android.util.Log
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -13,10 +14,13 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): Resource<T> {
     return try {
         Resource.Success(apiCall())
     } catch (e: HttpException) {
+        Log.e("SafeCall", "HttpException: ${e.code()} - ${e.message()}", e)
         Resource.Error(message = "HTTP ${e.code()}", code = e.code())
     } catch (e: IOException) {
+        Log.e("SafeCall", "IOException: ${e.message}", e)
         Resource.Error(message = "Koneksi internet bermasalah")
     } catch (e: Exception) {
+        Log.e("SafeCall", "Exception: ${e.javaClass.simpleName} - ${e.message}", e)
         Resource.Error(message = e.localizedMessage ?: "Terjadi kesalahan yang tidak diketahui")
     }
 }
